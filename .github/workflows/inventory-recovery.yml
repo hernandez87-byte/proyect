@@ -1,0 +1,30 @@
+name: Bounded inventory recovery
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Invoke bounded recovery function
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --retry 2 --retry-all-errors --connect-timeout 20 --max-time 90 \
+            'https://esfcsnoqfdwkobmlchgy.supabase.co/functions/v1/inventory-db-recovery-7c81f2e6' \
+            | tee recovery-result.json
+          grep -q '"ok":true' recovery-result.json
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recovery-result
+          path: recovery-result.json
+          if-no-files-found: ignore
+          retention-days: 1
