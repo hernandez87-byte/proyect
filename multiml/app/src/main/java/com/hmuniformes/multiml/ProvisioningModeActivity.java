@@ -15,11 +15,14 @@ public class ProvisioningModeActivity extends Activity {
             Intent result = new Intent();
             result.putExtra(
                     DevicePolicyManager.EXTRA_PROVISIONING_MODE,
-                    DevicePolicyManager.PROVISIONING_MODE_MANAGED_PROFILE
+                    DevicePolicyManager.PROVISIONING_MODE_FULLY_MANAGED_DEVICE
             );
             setResult(RESULT_OK, result);
         } else if (DevicePolicyManager.ACTION_ADMIN_POLICY_COMPLIANCE.equals(action)) {
             setResult(RESULT_OK);
+            Intent launch = new Intent(this, MainActivity.class);
+            launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(launch);
         } else {
             setResult(RESULT_CANCELED);
         }
