@@ -127,7 +127,12 @@ public class MainActivity extends Activity {
 
         action(root, "Cambiar de usuario", () -> {
             try {
-                startActivity(new Intent(Settings.ACTION_USER_SETTINGS));
+                Intent users = new Intent("android.settings.USER_SETTINGS");
+                if (users.resolveActivity(getPackageManager()) != null) {
+                    startActivity(users);
+                } else {
+                    startActivity(new Intent(Settings.ACTION_SETTINGS));
+                }
             } catch (Exception e) {
                 toast("Abre el selector de usuarios desde los ajustes rápidos.");
             }
