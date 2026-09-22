@@ -113,6 +113,8 @@ public class MainActivity extends Activity {
         addText(root,
                 "Cada cuenta es un usuario Android distinto. Mercado Libre y Mercado Pago conservan datos y sesiones separados.",
                 13, Color.rgb(148,163,184), false);
+
+        actionSecondary(root, "Desactivar modo administrador", this::confirmDisableDeviceOwner);
     }
 
     private void renderSecondary(LinearLayout root) {
@@ -264,6 +266,29 @@ public class MainActivity extends Activity {
                         }
                     } catch (Exception e) {
                         message("No se pudo eliminar", "Android rechazó la operación.");
+                    }
+                })
+                .show();
+    }
+
+    @SuppressWarnings("deprecation")
+    private void confirmDisableDeviceOwner() {
+        new AlertDialog.Builder(this)
+                .setTitle("Desactivar Multi ML")
+                .setMessage("Se eliminarán todas las cuentas aisladas y Multi ML dejará de ser administrador del dispositivo. Las apps y datos de esos usuarios se borrarán.")
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Desactivar", (dialog, which) -> {
+                    try {
+                        List<UserHandle> users = secondaryUsers();
+                        for (UserHandle user : users) {
+                            dpm.removeUser(admin, user);
+                        }
+                        dpm.clearDeviceOwnerApp(getPackageName());
+                        toast("Modo administrador desactivado.");
+                        render();
+                    } catch (Exception e) {
+                        message("No se pudo desactivar",
+                                e.getMessage() == null ? "Android rechazó la operación." : e.getMessage());
                     }
                 })
                 .show();
